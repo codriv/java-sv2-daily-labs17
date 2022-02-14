@@ -1,5 +1,7 @@
 package day01;
 
+import org.mariadb.jdbc.MariaDbDataSource;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -7,9 +9,9 @@ import java.util.List;
 
 public class ActorsRepository {
 
-    private DataSource dataSource;
+    private MariaDbDataSource dataSource;
 
-    public ActorsRepository(DataSource dataSource) {
+    public ActorsRepository(MariaDbDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -24,23 +26,22 @@ public class ActorsRepository {
     }
 
     public List<String> findActorsWithPrefix(String prefix) {
-        List<String> result = new ArrayList<>();
         try (Connection connection = dataSource.getConnection();
-//             PreparedStatement stmt = connection.prepareStatement("select * from actors where actor_name like '?%'")) {
              PreparedStatement stmt = connection.prepareStatement("select * from actors where actor_name like ?")) {
-//            stmt.setString(1, prefix);
             stmt.setString(1, prefix + "%");
-
-            try (ResultSet rs = stmt.executeQuery()){
-                while (rs.next()) {
-                    String actorName = rs.getString("actor_name");
-                    result.add(actorName);
-                }
-            } catch (SQLException sqle) {
-                throw new IllegalStateException("Cannot update: " + prefix, sqle);
-            }
+            return getList(stmt);
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot update: " + prefix, sqle);
+        }
+    }
+
+    private List<String> getList(PreparedStatement stmt) throws SQLException {
+        List<String> result = new ArrayList<>();
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                String actorName = rs.getString("actor_name");
+                result.add(actorName);
+            }
         }
         return result;
     }
