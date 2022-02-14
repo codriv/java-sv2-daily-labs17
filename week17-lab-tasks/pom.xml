@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>training</groupId>
-    <artifactId>week14-lab-tasks</artifactId>
+    <artifactId>week17-lab-tasks</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
         <dependency>
