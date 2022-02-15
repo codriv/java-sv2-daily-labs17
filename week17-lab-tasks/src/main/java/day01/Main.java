@@ -1,10 +1,10 @@
 package day01;
 
+import org.flywaydb.core.Flyway;
 import org.mariadb.jdbc.MariaDbDataSource;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.time.LocalDate;
 
 public class Main {
 
@@ -19,15 +19,18 @@ public class Main {
             throw new IllegalStateException("Cannot reach Database!");
         }
 
-//        try (Connection connection = dataSource.getConnection()){
-//            Statement stmt = connection.createStatement();
-//            stmt.executeUpdate("insert into actors (actor_name) values ('John Doe')");
-//        } catch (SQLException sql) {
-//            throw new IllegalStateException("Cannot connect");
-//        }
+        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.baseline();
+        flyway.migrate();
 
-        ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-        actorsRepository.saveActor("Jack Doe");
-        System.out.println(actorsRepository.findActorsWithPrefix("jo"));
+//        ActorsRepository actorsRepository = new ActorsRepository(dataSource);
+//        actorsRepository.saveActor("Jack Doe");
+//        System.out.println(actorsRepository.findActorsWithPrefix("jo"));
+
+        MoviesRepository moviesRepository = new MoviesRepository(dataSource);
+//        moviesRepository.saveMovie("Titanic", LocalDate.of(1999, 12, 10));
+//        moviesRepository.saveMovie("Film", LocalDate.of(1998, 10, 20));
+//        moviesRepository.saveMovie("Rajzfoilm", LocalDate.of(1995, 5, 8));
+        System.out.println(moviesRepository.findAllMovies());
     }
 }
