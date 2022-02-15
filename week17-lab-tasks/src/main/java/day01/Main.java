@@ -24,7 +24,6 @@ public class Main {
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-//        actorsRepository.setNextId();
         actorsRepository.saveActor("Jim Doe");
         System.out.println(actorsRepository.findActorsWithPrefix("jo"));
 
