@@ -23,14 +23,15 @@ public class Main {
         flyway.baseline();
         flyway.migrate();
 
-//        ActorsRepository actorsRepository = new ActorsRepository(dataSource);
-//        actorsRepository.saveActor("Jack Doe");
-//        System.out.println(actorsRepository.findActorsWithPrefix("jo"));
+        ActorsRepository actorsRepository = new ActorsRepository(dataSource);
+//        actorsRepository.setNextId();
+        actorsRepository.saveActor("Jim Doe");
+        System.out.println(actorsRepository.findActorsWithPrefix("jo"));
 
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
-//        moviesRepository.saveMovie("Titanic", LocalDate.of(1999, 12, 10));
-//        moviesRepository.saveMovie("Film", LocalDate.of(1998, 10, 20));
-//        moviesRepository.saveMovie("Rajzfoilm", LocalDate.of(1995, 5, 8));
+        moviesRepository.saveMovie("Titanic", LocalDate.of(1999, 12, 10));
+        moviesRepository.saveMovie("Film", LocalDate.of(1998, 10, 20));
+        moviesRepository.saveMovie("Rajzfoilm", LocalDate.of(1995, 5, 8));
         System.out.println(moviesRepository.findAllMovies());
     }
 }

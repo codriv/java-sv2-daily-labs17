@@ -14,6 +14,7 @@ public class ActorsRepository {
     }
 
     public void saveActor(String name) {
+        setNextId();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement("insert into actors (actor_name) values (?)")) {
             stmt.setString(1, name);
@@ -42,5 +43,17 @@ public class ActorsRepository {
             }
         }
         return result;
+    }
+
+    public void setNextId() {
+        try (Connection connection = dataSource.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("select max(id) from actors;")) {
+            rs.next();
+            int nextId = rs.getInt(1);
+            stmt.executeQuery("alter table actors auto_increment = " + nextId + ";");
+        } catch (SQLException sqle) {
+            throw new IllegalStateException("Cannot query!", sqle);
+        }
     }
 }
