@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ActorsRepository {
 
@@ -13,14 +14,26 @@ public class ActorsRepository {
         this.dataSource = dataSource;
     }
 
-    public void saveActor(String name) {
+    public long saveActor(String name) {
         setNextId();
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement stmt = connection.prepareStatement("insert into actors (actor_name) values (?)")) {
+             PreparedStatement stmt = connection.prepareStatement("insert into actors (actor_name) values (?)",
+                     PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, name);
             stmt.executeUpdate();
+            return getGeneratedId(stmt);
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot update: " + name, sqle);
+        }
+    }
+
+    private long getGeneratedId(PreparedStatement stmt) throws SQLException {
+        try(ResultSet rs = stmt.getGeneratedKeys()) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            } else {
+                throw new IllegalStateException("No generated Id!");
+            }
         }
     }
 
@@ -54,6 +67,29 @@ public class ActorsRepository {
             stmt.executeQuery("alter table actors auto_increment = " + nextId + ";");
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot query!", sqle);
+        }
+    }
+
+    public Optional<Actor> findActorByName(String name) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement("select * from actors where actor_name = ?")) {
+            stmt.setString(1, name);
+            return getOptional(stmt);
+        } catch (SQLException sqle) {
+            throw new IllegalStateException("Cannot query by name!", sqle);
+        }
+    }
+
+    private Optional<Actor> getOptional(PreparedStatement stmt) throws SQLException {
+        try(ResultSet rs = stmt.executeQuery()) {
+            String actor_name = null;
+            if (rs.next()) {
+                long id = rs.getLong("id");
+                actor_name = rs.getString("actor_name");
+                return Optional.of(new Actor(id, actor_name));
+            } else {
+                return Optional.empty();
+            }
         }
     }
 }
