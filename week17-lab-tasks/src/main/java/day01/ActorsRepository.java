@@ -74,13 +74,13 @@ public class ActorsRepository {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement("select * from actors where actor_name = ?")) {
             stmt.setString(1, name);
-            return getOptional(stmt);
+            return getActor(stmt);
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot query by name!", sqle);
         }
     }
 
-    private Optional<Actor> getOptional(PreparedStatement stmt) throws SQLException {
+    private Optional<Actor> getActor(PreparedStatement stmt) throws SQLException {
         try(ResultSet rs = stmt.executeQuery()) {
             String actor_name = null;
             if (rs.next()) {

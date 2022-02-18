@@ -21,11 +21,7 @@ public class ActorsMoviesService {
         for (String actor: actorNames) {
             long actorId;
             Optional<Actor> found = actorsRepository.findActorByName(actor);
-            if (found.isPresent()) {
-                actorId = found.get().getId();
-            } else {
-                actorId = actorsRepository.saveActor(actor);
-            }
+            actorId = found.map(Actor::getId).orElseGet(() -> actorsRepository.saveActor(actor));
             actorsMoviesRepository.insertActorAndMovie(actorId, movieId);
         }
     }

@@ -13,7 +13,7 @@ public class Main {
 
         MariaDbDataSource dataSource = new MariaDbDataSource();
         try {
-            dataSource.setUrl("jdbc:mariadb://localhost:3306/movies-actors?useUnicode=true");
+            dataSource.setUrl("jdbc:mariadb://localhost:3306/movies-actors?useUnicode=true&allowMultiQueries=true");
             dataSource.setUserName("root");
             dataSource.setPassword("64o1qNpG8m");
         } catch (SQLException throwables) {
@@ -39,10 +39,22 @@ public class Main {
 //        System.out.println(moviesRepository.findAllMovies());
 
         ActorsMoviesRepository actorsMoviesRepository = new ActorsMoviesRepository(dataSource);
+        ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository, moviesRepository, actorsMoviesRepository);
+        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 11, 13), List.of("Leonardo", "Kate"));
+        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(2007, 10, 11), List.of("Leonardo", "Nicole"));
 
-        ActorsMoviesService service = new ActorsMoviesService(actorsRepository, moviesRepository, actorsMoviesRepository);
+        RatingsRepository ratingsRepository = new RatingsRepository(dataSource);
+        MoviesRatingService moviesRatingService = new MoviesRatingService(moviesRepository, ratingsRepository);
 
-        service.insertMovieWithActors("Titanic", LocalDate.of(1997, 11, 13), List.of("Leonardo", "Kate"));
+        moviesRatingService.addRatings("Titanic", 5, 4, 2);
+        System.out.println(moviesRatingService.getAverageRating("Titanic"));
+        moviesRatingService.addRatings("Great Gatsby", 1, 3, 5, 2);
+        System.out.println(moviesRatingService.getAverageRating("Great Gatsby"));
+        moviesRatingService.addRatings("Titanic", 1);
+        System.out.println(moviesRatingService.getAverageRating("Titanic"));
+        moviesRatingService.addRatings("Titanic", 1);
+        System.out.println(moviesRatingService.getAverageRating("Titanic"));
+//        System.out.println(moviesRatingService.getAverageRating("film"));
 
     }
 }
