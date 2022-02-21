@@ -55,6 +55,8 @@ public class Main {
         moviesRatingService.addRatings("Titanic", 1);
         System.out.println(moviesRatingService.getAverageRating("Titanic"));
 //        System.out.println(moviesRatingService.getAverageRating("film"));
+        actorsMoviesService.insertMovieWithActors("Star Wars", LocalDate.of(1972, 05, 25), List.of("Sky", "Dart"));
+        moviesRatingService.addRatings("Star Wars", 3, 4, 2, 5, 5, 1);
 
     }
 }
